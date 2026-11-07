@@ -40,6 +40,10 @@ defmodule VisoBackendWeb.Router do
     post "/posts", PostsController, :create
     post "/posts/:id/like", PostsController, :like
     post "/posts/:id/view", PostsController, :view
+
+    post "/stories", StoriesController, :create
+    get "/stories", StoriesController, :feed
+    post "/stories/:id/view", StoriesController, :mark_viewed
   end
 
   # Enable LiveDashboard in development
