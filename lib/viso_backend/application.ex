@@ -7,10 +7,6 @@ defmodule VisoBackend.Application do
 
   @impl true
   def start(_type, _args) do
-    # Temporary checkpoint while diagnosing a silent boot failure on
-    # Render — remove once the deploy is confirmed healthy.
-    IO.puts("VisoBackend.Application.start/2 reached")
-
     children = [
       VisoBackendWeb.Telemetry,
       VisoBackend.Repo,

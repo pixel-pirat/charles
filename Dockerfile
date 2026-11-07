@@ -63,6 +63,11 @@ RUN mix compile
 COPY config/runtime.exs config/
 
 COPY rel rel
+# These overlay scripts were generated on Windows, where NTFS doesn't
+# track the Unix executable bit the way git expects — without this,
+# mix release copies them in non-executable and /app/bin/server fails
+# with "Permission denied" (exit 126) at container start.
+RUN chmod +x rel/overlays/bin/server rel/overlays/bin/migrate
 RUN mix release
 
 # start a new build stage so that the final image will only contain
@@ -97,8 +102,4 @@ USER nobody
 # above and adding an entrypoint. See https://github.com/krallin/tini for details
 # ENTRYPOINT ["/tini", "--"]
 
-# TEMPORARY bisection step: bin/server execs the BEAM directly, so if
-# it dies we lose any wrapper that could report why. This runs it
-# un-exec'd so the shell survives long enough to print the real exit
-# code and keep the container alive to show it. Revert once resolved.
-CMD ["sh", "-c", "echo BOOT_START; /app/bin/server; echo BOOT_EXIT_CODE=$?; sleep 120"]
+CMD ["/app/bin/server"]
