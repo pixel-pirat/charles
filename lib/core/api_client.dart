@@ -1,28 +1,22 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 
 import 'token_storage.dart';
 
-/// The Phoenix dev server's host as seen from each run target.
+/// Points at the deployed Render backend by default — real device or
+/// desktop, no local server or LAN setup required.
 ///
-/// Override with `--dart-define=BACKEND_HOST=<ip>` when running on a
-/// real device — it needs your machine's LAN IP (e.g. 192.168.1.23),
-/// reachable because `viso_backend`'s dev endpoint binds 0.0.0.0, not
-/// just loopback. Without that override: the Android *emulator* can't
-/// reach the host machine via `localhost`, so it goes through the
-/// special `10.0.2.2` alias instead; every other target (desktop, iOS
-/// simulator, a real device not given an override) falls back to
-/// `localhost`, which only works when the server is on the same
-/// machine.
-String backendHost() {
-  const override = String.fromEnvironment('BACKEND_HOST');
-  if (override.isNotEmpty) return override;
-  if (!Platform.isAndroid) return 'localhost';
-  return '10.0.2.2';
-}
+/// Override with `--dart-define=API_BASE_URL=<url>` to hit a local
+/// dev server instead, e.g.:
+///   --dart-define=API_BASE_URL=http://localhost:4000/api
+///   --dart-define=API_BASE_URL=http://10.0.2.2:4000/api       (Android emulator)
+///   --dart-define=API_BASE_URL=http://192.168.1.23:4000/api   (real device, same Wi-Fi as the dev machine)
+const _prodBaseUrl = 'https://charles-80p2.onrender.com/api';
 
-const backendPort = 4000;
+String apiBaseUrl() {
+  const override = String.fromEnvironment('API_BASE_URL');
+  if (override.isNotEmpty) return override;
+  return _prodBaseUrl;
+}
 
 class ApiException implements Exception {
   ApiException(this.message, {this.fieldErrors});
@@ -38,7 +32,7 @@ class ApiException implements Exception {
 /// every request and turns Phoenix's error shapes into [ApiException].
 class ApiClient {
   ApiClient(this._tokenStorage)
-      : dio = Dio(BaseOptions(baseUrl: 'http://${backendHost()}:$backendPort/api')) {
+      : dio = Dio(BaseOptions(baseUrl: apiBaseUrl())) {
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
