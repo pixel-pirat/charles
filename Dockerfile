@@ -97,7 +97,8 @@ USER nobody
 # above and adding an entrypoint. See https://github.com/krallin/tini for details
 # ENTRYPOINT ["/tini", "--"]
 
-# TEMPORARY bisection step: proves whether container stdout reaches
-# Render's logs at all, and whether the container survives on its
-# own, before trying /app/bin/server again. Revert once resolved.
-CMD ["sh", "-c", "echo BISECT_CONTAINER_ALIVE && sleep 60 && echo BISECT_SLEEP_DONE"]
+# TEMPORARY bisection step: bin/server execs the BEAM directly, so if
+# it dies we lose any wrapper that could report why. This runs it
+# un-exec'd so the shell survives long enough to print the real exit
+# code and keep the container alive to show it. Revert once resolved.
+CMD ["sh", "-c", "echo BOOT_START; /app/bin/server; echo BOOT_EXIT_CODE=$?; sleep 120"]
