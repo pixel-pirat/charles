@@ -12,6 +12,7 @@ defmodule VisoBackend.Application do
       VisoBackend.Repo,
       {DNSCluster, query: Application.get_env(:viso_backend, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: VisoBackend.PubSub},
+      VisoBackendWeb.Presence,
       # Start a worker by calling: VisoBackend.Worker.start_link(arg)
       # {VisoBackend.Worker, arg},
       # Start to serve requests, typically the last entry

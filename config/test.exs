@@ -6,10 +6,8 @@ import Config
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
 config :viso_backend, VisoBackend.Repo,
-  username: "postgres",
-  password: "postgres",
-  hostname: "localhost",
-  database: "viso_backend_test#{System.get_env("MIX_TEST_PARTITION")}",
+  ssl: true,
+  prepare: :unnamed,
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: System.schedulers_online() * 2
 
@@ -23,9 +21,21 @@ config :viso_backend, VisoBackendWeb.Endpoint,
 # Print only warnings and errors during test
 config :logger, level: :warning
 
+# ExUnit's assert_receive/assert_push/assert_reply/assert_broadcast all
+# default to a 100ms timeout. Neon is a remote, pooled database —
+# queries routinely take a few hundred ms from this environment, so
+# any assertion downstream of a DB write needs more room than that.
+config :ex_unit, assert_receive_timeout: 2_000
+
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
 
 # Sort query params output of verified routes for robust url comparisons
 config :phoenix,
   sort_verified_routes_query_params: true
+
+# Reuses the same (gitignored) Neon dev database as config/dev.exs —
+# Ecto's SQL Sandbox wraps each test in a transaction that's rolled
+# back afterward, so this never leaves real data behind. Must be the
+# last config import for the same reason as in dev.exs.
+import_config "dev.secret.exs"
