@@ -97,4 +97,7 @@ USER nobody
 # above and adding an entrypoint. See https://github.com/krallin/tini for details
 # ENTRYPOINT ["/tini", "--"]
 
-CMD ["/app/bin/server"]
+# TEMPORARY bisection step: proves whether container stdout reaches
+# Render's logs at all, and whether the container survives on its
+# own, before trying /app/bin/server again. Revert once resolved.
+CMD ["sh", "-c", "echo BISECT_CONTAINER_ALIVE && sleep 60 && echo BISECT_SLEEP_DONE"]
