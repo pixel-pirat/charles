@@ -4,10 +4,20 @@ import 'package:dio/dio.dart';
 
 import 'token_storage.dart';
 
-/// The Phoenix dev server's host as seen from each run target. The
-/// Android emulator can't reach the host machine via `localhost` — it
-/// has to go through the special `10.0.2.2` alias instead.
+/// The Phoenix dev server's host as seen from each run target.
+///
+/// Override with `--dart-define=BACKEND_HOST=<ip>` when running on a
+/// real device — it needs your machine's LAN IP (e.g. 192.168.1.23),
+/// reachable because `viso_backend`'s dev endpoint binds 0.0.0.0, not
+/// just loopback. Without that override: the Android *emulator* can't
+/// reach the host machine via `localhost`, so it goes through the
+/// special `10.0.2.2` alias instead; every other target (desktop, iOS
+/// simulator, a real device not given an override) falls back to
+/// `localhost`, which only works when the server is on the same
+/// machine.
 String backendHost() {
+  const override = String.fromEnvironment('BACKEND_HOST');
+  if (override.isNotEmpty) return override;
   if (!Platform.isAndroid) return 'localhost';
   return '10.0.2.2';
 }
