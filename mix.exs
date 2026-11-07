@@ -54,7 +54,14 @@ defmodule VisoBackend.MixProject do
       # bcrypt_elixir needs nmake/Visual Studio Build Tools on Windows,
       # which isn't installed, and this project's path contains spaces,
       # which native Makefile-based builds explicitly warn can break).
-      {:pbkdf2_elixir, "~> 2.0"}
+      {:pbkdf2_elixir, "~> 2.0"},
+      # S3-compatible client for media uploads (Cloudflare R2). Pure
+      # Elixir/Erlang — no native compiler needed, same reasoning as
+      # pbkdf2_elixir above.
+      {:ex_aws, "~> 2.5"},
+      {:ex_aws_s3, "~> 2.5"},
+      {:hackney, "~> 1.20"},
+      {:sweet_xml, "~> 0.7"}
     ]
   end
 

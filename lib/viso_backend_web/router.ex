@@ -31,6 +31,8 @@ defmodule VisoBackendWeb.Router do
     # Phoenix will treat "search" as a user id.
     get "/users/search", UsersController, :search
     get "/users/:id", UsersController, :show
+
+    post "/media", MediaController, :upload
   end
 
   # Enable LiveDashboard in development

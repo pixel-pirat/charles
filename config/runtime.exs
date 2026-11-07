@@ -76,6 +76,16 @@ if config_env() == :prod do
     ],
     secret_key_base: secret_key_base
 
+  # Not required for the app to boot — media uploads just fail with a
+  # clear error (see VisoBackend.Media) until these are set in
+  # Render's Environment tab.
+  config :viso_backend, :r2,
+    account_id: System.get_env("R2_ACCOUNT_ID"),
+    access_key_id: System.get_env("R2_ACCESS_KEY_ID"),
+    secret_access_key: System.get_env("R2_SECRET_ACCESS_KEY"),
+    bucket: System.get_env("R2_BUCKET"),
+    public_base_url: System.get_env("R2_PUBLIC_BASE_URL")
+
   # ## SSL Support
   #
   # To get SSL working, you will need to add the `https` key
