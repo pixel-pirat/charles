@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: viso-backend
+    env: docker
+    plan: free
+    region: oregon
+    branch: backend
+    healthCheckPath: /health
+    envVars:
+      - key: PHX_SERVER
+        value: "true"
+      - key: SECRET_KEY_BASE
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false
+      - key: POOL_SIZE
+        value: "5"

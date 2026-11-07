@@ -7,7 +7,11 @@ config :viso_backend, VisoBackendWeb.Endpoint,
   force_ssl: [
     rewrite_on: [:x_forwarded_proto],
     exclude: [
-      # paths: ["/health"],
+      # Render's internal health check hits this over plain HTTP
+      # without the x-forwarded-proto header the public edge sets, so
+      # without this exclusion force_ssl would 301-redirect it, and
+      # Render's health check only accepts a 200.
+      paths: ["/health"],
       hosts: ["localhost", "127.0.0.1"]
     ]
   ]

@@ -9,6 +9,10 @@ defmodule VisoBackendWeb.Router do
     plug VisoBackendWeb.ApiAuthPlug
   end
 
+  # Unauthenticated, outside the :api pipeline — just a plain 200 for
+  # Render's health check, nothing JSON-related needed.
+  get "/health", VisoBackendWeb.HealthController, :show
+
   scope "/api", VisoBackendWeb do
     pipe_through :api
 

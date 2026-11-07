@@ -18,9 +18,10 @@ config :viso_backend, VisoBackend.Repo,
 # watchers to your application. For example, we can use it
 # to bundle .js and .css sources.
 config :viso_backend, VisoBackendWeb.Endpoint,
-  # Binding to loopback ipv4 address prevents access from other machines.
-  # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-  http: [ip: {127, 0, 0, 1}],
+  # 0.0.0.0 instead of loopback-only so a phone on the same Wi-Fi can
+  # reach this dev server too (needed for testing the Flutter app on a
+  # real device, not just the emulator/desktop).
+  http: [ip: {0, 0, 0, 0}, port: 4000],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,

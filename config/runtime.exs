@@ -34,7 +34,11 @@ if config_env() == :prod do
   maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
 
   config :viso_backend, VisoBackend.Repo,
-    # ssl: true,
+    # Neon requires SSL, and its pooled endpoint is PgBouncer running in
+    # transaction mode, which doesn't support named prepared statements
+    # (see config/dev.exs for the same requirement).
+    ssl: true,
+    prepare: :unnamed,
     url: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
     # For machines with several cores, consider starting multiple pools of `pool_size`
@@ -53,7 +57,11 @@ if config_env() == :prod do
       You can generate one by calling: mix phx.gen.secret
       """
 
-  host = System.get_env("PHX_HOST") || "example.com"
+  # Render sets RENDER_EXTERNAL_HOSTNAME automatically on every web
+  # service, so this works out of the box without manually setting
+  # PHX_HOST after each deploy.
+  host =
+    System.get_env("PHX_HOST") || System.get_env("RENDER_EXTERNAL_HOSTNAME") || "example.com"
 
   config :viso_backend, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
