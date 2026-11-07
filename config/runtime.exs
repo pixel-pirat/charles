@@ -24,6 +24,10 @@ config :viso_backend, VisoBackendWeb.Endpoint,
   http: [port: String.to_integer(System.get_env("PORT", "4000"))]
 
 if config_env() == :prod do
+  # Temporary checkpoint while diagnosing a silent boot failure on
+  # Render — remove once the deploy is confirmed healthy.
+  IO.puts("runtime.exs: entering prod config block, PORT=#{System.get_env("PORT")}")
+
   database_url =
     System.get_env("DATABASE_URL") ||
       raise """
