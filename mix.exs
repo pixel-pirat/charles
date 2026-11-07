@@ -49,7 +49,12 @@ defmodule VisoBackend.MixProject do
       {:gettext, "~> 1.0"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.2.0"},
-      {:bandit, "~> 1.5"}
+      {:bandit, "~> 1.5"},
+      # Pure-Elixir password hashing (no native/NIF compilation needed —
+      # bcrypt_elixir needs nmake/Visual Studio Build Tools on Windows,
+      # which isn't installed, and this project's path contains spaces,
+      # which native Makefile-based builds explicitly warn can break).
+      {:pbkdf2_elixir, "~> 2.0"}
     ]
   end
 

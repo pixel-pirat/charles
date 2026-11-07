@@ -5,8 +5,22 @@ defmodule VisoBackendWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :api_auth do
+    plug VisoBackendWeb.ApiAuthPlug
+  end
+
   scope "/api", VisoBackendWeb do
     pipe_through :api
+
+    post "/register", AuthController, :register
+    post "/login", AuthController, :login
+  end
+
+  scope "/api", VisoBackendWeb do
+    pipe_through [:api, :api_auth]
+
+    delete "/logout", AuthController, :logout
+    get "/me", AuthController, :me
   end
 
   # Enable LiveDashboard in development
