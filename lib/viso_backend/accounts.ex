@@ -41,6 +41,17 @@ defmodule VisoBackend.Accounts do
   def get_user(id), do: Repo.get(User, id)
 
   @doc """
+  The best display name available for `user`: full name, falling back
+  to username, then the local part of their email, then a generic
+  placeholder. Shared by every feature that shows an author/sender
+  name (posts, stories, chat).
+  """
+  def display_name(%User{} = user) do
+    user.full_name || user.username || (user.email && List.first(String.split(user.email, "@"))) ||
+      "Unknown user"
+  end
+
+  @doc """
   Returns up to 20 users whose name or username matches `query`,
   excluding `exclude_user_id`. Used by chat's "New Message" flow.
   Returns `[]` for a query shorter than 2 characters rather than

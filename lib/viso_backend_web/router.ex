@@ -33,6 +33,13 @@ defmodule VisoBackendWeb.Router do
     get "/users/:id", UsersController, :show
 
     post "/media", MediaController, :upload
+
+    # Order matters: static segments ("feed", "mine") before "/:id/...".
+    get "/posts/feed", PostsController, :feed
+    get "/posts/mine", PostsController, :mine
+    post "/posts", PostsController, :create
+    post "/posts/:id/like", PostsController, :like
+    post "/posts/:id/view", PostsController, :view
   end
 
   # Enable LiveDashboard in development
