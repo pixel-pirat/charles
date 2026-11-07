@@ -16,7 +16,9 @@ defmodule VisoBackendWeb.AuthJSON do
       id: user.id,
       email: user.email,
       full_name: user.full_name,
-      username: user.username
+      username: user.username,
+      image_url: user.image_url,
+      bio: user.bio
     }
   end
 end

@@ -47,4 +47,18 @@ defmodule VisoBackendWeb.AuthController do
   def me(conn, _params) do
     render(conn, :show, user: conn.assigns.current_user)
   end
+
+  @doc "PATCH /api/me — edits the signed-in user's own profile fields."
+  def update_profile(conn, params) do
+    case Accounts.update_profile(conn.assigns.current_user, params) do
+      {:ok, user} ->
+        render(conn, :show, user: user)
+
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> put_view(json: VisoBackendWeb.ChangesetJSON)
+        |> render(:error, changeset: changeset)
+    end
+  end
 end

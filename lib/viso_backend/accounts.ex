@@ -38,6 +38,32 @@ defmodule VisoBackend.Accounts do
 
   def get_user!(id), do: Repo.get!(User, id)
 
+  def get_user(id), do: Repo.get(User, id)
+
+  @doc """
+  Returns up to 20 users whose name or username matches `query`,
+  excluding `exclude_user_id`. Used by chat's "New Message" flow.
+  Returns `[]` for a query shorter than 2 characters rather than
+  matching everything.
+  """
+  def search_users(query, exclude_user_id) do
+    trimmed = String.trim(query)
+
+    if String.length(trimmed) < 2 do
+      []
+    else
+      pattern = "%#{trimmed}%"
+
+      from(u in User,
+        where:
+          (ilike(u.username, ^pattern) or ilike(u.full_name, ^pattern)) and
+            u.id != ^exclude_user_id,
+        limit: 20
+      )
+      |> Repo.all()
+    end
+  end
+
   @doc "Sets a display name and @handle on an existing account."
   def update_profile(user, attrs) do
     user

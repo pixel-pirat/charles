@@ -14,6 +14,8 @@ defmodule VisoBackend.Accounts.User do
     field :password, :string, virtual: true, redact: true
     field :full_name, :string
     field :username, :string
+    field :image_url, :string
+    field :bio, :string
 
     timestamps(type: :utc_datetime)
   end
@@ -59,15 +61,22 @@ defmodule VisoBackend.Accounts.User do
     end
   end
 
-  @doc "Changeset for setting a display name and handle after signup."
+  @doc """
+  Changeset for setting/editing profile fields: display name, handle,
+  avatar, bio. `full_name`/`username` are required overall (so the
+  very first call, completing signup, must set them), but a later call
+  can send just e.g. `image_url` without re-sending the rest — the
+  existing stored values already satisfy `validate_required`.
+  """
   def profile_changeset(user, attrs) do
     user
-    |> cast(attrs, [:full_name, :username])
+    |> cast(attrs, [:full_name, :username, :image_url, :bio])
     |> validate_required([:full_name, :username])
     |> validate_length(:username, min: 3, max: 30)
     |> validate_format(:username, ~r/^[a-zA-Z0-9_]+$/,
       message: "can only contain letters, numbers and underscores"
     )
+    |> validate_length(:bio, max: 280)
     |> unsafe_validate_unique(:username, VisoBackend.Repo)
     |> unique_constraint(:username)
   end

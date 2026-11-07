@@ -25,6 +25,12 @@ defmodule VisoBackendWeb.Router do
 
     delete "/logout", AuthController, :logout
     get "/me", AuthController, :me
+    patch "/me", AuthController, :update_profile
+
+    # Order matters: "/search" must be matched before "/:id" below, or
+    # Phoenix will treat "search" as a user id.
+    get "/users/search", UsersController, :search
+    get "/users/:id", UsersController, :show
   end
 
   # Enable LiveDashboard in development
