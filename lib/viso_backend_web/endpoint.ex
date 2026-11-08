@@ -45,6 +45,11 @@ defmodule VisoBackendWeb.Endpoint do
   plug Plug.RequestId
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
 
+  # Only matters for the Flutter *web* build — native targets
+  # (Android/desktop/iOS) never hit CORS at all. Handles preflight
+  # OPTIONS requests and adds Access-Control-* headers to responses.
+  plug CORSPlug, origin: "*"
+
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],
     pass: ["*/*"],
