@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'features/auth/auth_controller.dart';
 import 'features/auth/login_screen.dart';
-import 'features/home/home_screen.dart';
+import 'features/home/main_shell.dart';
+import 'theme/app_theme.dart';
 
 void main() {
   runApp(const ProviderScope(child: VisoApp()));
@@ -16,13 +17,13 @@ class VisoApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Viso',
-      theme: ThemeData(colorSchemeSeed: Colors.indigo, useMaterial3: true),
+      theme: AppTheme.lightTheme,
       home: const _AuthGate(),
     );
   }
 }
 
-/// Shows the signed-in [HomeScreen] or [LoginScreen] depending on
+/// Shows the signed-in [MainShell] or [LoginScreen] depending on
 /// whether a stored token exists and still validates against the
 /// backend (checked once, in [AuthController.build]).
 class _AuthGate extends ConsumerWidget {
@@ -33,7 +34,7 @@ class _AuthGate extends ConsumerWidget {
     final authState = ref.watch(authControllerProvider);
 
     return authState.when(
-      data: (user) => user != null ? const HomeScreen() : const LoginScreen(),
+      data: (user) => user != null ? const MainShell() : const LoginScreen(),
       loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (_, _) => const LoginScreen(),
     );

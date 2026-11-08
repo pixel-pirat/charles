@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 
 import 'token_storage.dart';
@@ -53,8 +55,12 @@ class ApiClient {
     return _unwrap(dio.post<Map<String, dynamic>>(path, data: data));
   }
 
-  Future<Map<String, dynamic>> get(String path) {
-    return _unwrap(dio.get<Map<String, dynamic>>(path));
+  Future<Map<String, dynamic>> patch(String path, {Map<String, dynamic>? data}) {
+    return _unwrap(dio.patch<Map<String, dynamic>>(path, data: data));
+  }
+
+  Future<Map<String, dynamic>> get(String path, {Map<String, dynamic>? query}) {
+    return _unwrap(dio.get<Map<String, dynamic>>(path, queryParameters: query));
   }
 
   Future<void> delete(String path) async {
@@ -63,6 +69,22 @@ class ApiClient {
     } on DioException catch (e) {
       throw _toApiException(e);
     }
+  }
+
+  /// Some DELETE endpoints (e.g. deleting a chat message for everyone)
+  /// return the updated resource instead of a bare 204.
+  Future<Map<String, dynamic>> deleteExpectingBody(String path) {
+    return _unwrap(dio.delete<Map<String, dynamic>>(path));
+  }
+
+  /// Uploads a local file as multipart/form-data under field "file" —
+  /// matches POST /api/media's contract. Returns the public URL.
+  Future<String> uploadFile(String filePath) async {
+    final form = FormData.fromMap({
+      'file': await MultipartFile.fromFile(filePath, filename: filePath.split(Platform.pathSeparator).last),
+    });
+    final json = await _unwrap(dio.post<Map<String, dynamic>>('/media', data: form));
+    return json['url'] as String;
   }
 
   Future<Map<String, dynamic>> _unwrap(Future<Response<Map<String, dynamic>>> request) async {
