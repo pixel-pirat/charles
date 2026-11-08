@@ -44,6 +44,33 @@ defmodule VisoBackendWeb.Router do
     post "/stories", StoriesController, :create
     get "/stories", StoriesController, :feed
     post "/stories/:id/view", StoriesController, :mark_viewed
+
+    get "/chat/conversations", ChatController, :conversations
+    get "/chat/conversations/archived", ChatController, :archived_conversations
+    post "/chat/conversations/:partner_id/read", ChatController, :mark_read
+
+    get "/chat/messages/:partner_id", ChatController, :messages
+    post "/chat/messages", ChatController, :send_message
+    post "/chat/messages/:id/forward", ChatController, :forward
+    patch "/chat/messages/:id", ChatController, :edit
+    delete "/chat/messages/:id", ChatController, :delete
+    post "/chat/messages/:id/delete_for_me", ChatController, :delete_for_me
+    post "/chat/messages/:id/react", ChatController, :react
+
+    get "/chat/blocks", ChatController, :blocked_users
+    post "/chat/blocks/:user_id", ChatController, :block
+    delete "/chat/blocks/:user_id", ChatController, :unblock
+
+    post "/chat/mutes/:partner_id", ChatController, :mute
+    delete "/chat/mutes/:partner_id", ChatController, :unmute
+    post "/chat/pins/:partner_id", ChatController, :pin
+    delete "/chat/pins/:partner_id", ChatController, :unpin
+    post "/chat/archives/:partner_id", ChatController, :archive
+    delete "/chat/archives/:partner_id", ChatController, :unarchive
+
+    get "/chat/stars", ChatController, :starred_messages
+    post "/chat/stars/:message_id", ChatController, :star
+    delete "/chat/stars/:message_id", ChatController, :unstar
   end
 
   # Enable LiveDashboard in development

@@ -4,6 +4,7 @@ defmodule VisoBackendWeb.UserSocket do
   # Any topic starting with "room:" is handled by RoomChannel — the
   # specific room id (e.g. "room:2-5") is parsed inside its join/3.
   channel "room:*", VisoBackendWeb.RoomChannel
+  channel "lobby", VisoBackendWeb.LobbyChannel
 
   @impl true
   def connect(%{"token" => token}, socket, _connect_info) do

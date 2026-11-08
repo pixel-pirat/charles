@@ -23,9 +23,11 @@ config :logger, level: :warning
 
 # ExUnit's assert_receive/assert_push/assert_reply/assert_broadcast all
 # default to a 100ms timeout. Neon is a remote, pooled database —
-# queries routinely take a few hundred ms from this environment, so
-# any assertion downstream of a DB write needs more room than that.
-config :ex_unit, assert_receive_timeout: 2_000
+# queries routinely take a few hundred ms from this environment, and
+# some actions (e.g. Chat.send_message/3) now run several sequential
+# queries (block check, insert, reaction/reply lookups) before
+# replying, so assertions downstream of those need real headroom.
+config :ex_unit, assert_receive_timeout: 5_000
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime

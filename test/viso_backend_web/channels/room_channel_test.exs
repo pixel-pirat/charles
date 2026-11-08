@@ -61,7 +61,7 @@ defmodule VisoBackendWeb.RoomChannelTest do
     assert_reply ref, :ok
     assert_broadcast "new_message", %{text: "hello", sender_id: sender_id}
     assert sender_id == user_a.id
-    assert [%Chat.Message{text: "hello"}] = Chat.list_messages(user_a.id, user_b.id)
+    assert [%{text: "hello"}] = Chat.list_messages(user_a.id, user_b.id)
   end
 
   test "a user cannot join a room that isn't theirs", %{

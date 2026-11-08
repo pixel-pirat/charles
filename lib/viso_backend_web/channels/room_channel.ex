@@ -30,24 +30,30 @@ defmodule VisoBackendWeb.RoomChannel do
     {:noreply, socket}
   end
 
+  # Chat.send_message/3 broadcasts "new_message" to the room itself
+  # (shared by this channel path and the REST fallback at
+  # POST /api/chat/messages), so this handler doesn't broadcast again
+  # — it just persists and replies with the outcome.
   @impl true
-  def handle_in("new_message", %{"text" => text, "recipient_id" => recipient_id}, socket) do
+  def handle_in("new_message", %{"text" => text, "recipient_id" => recipient_id} = params, socket) do
     sender_id = socket.assigns.current_user.id
 
-    case Chat.send_message(sender_id, recipient_id, text) do
-      {:ok, message} ->
-        broadcast!(socket, "new_message", %{
-          id: message.id,
-          sender_id: message.sender_id,
-          recipient_id: message.recipient_id,
-          text: message.text,
-          inserted_at: message.inserted_at
-        })
+    attrs = %{
+      "text" => text,
+      "media_url" => params["media_url"],
+      "media_type" => params["media_type"],
+      "reply_to_message_id" => params["reply_to_message_id"]
+    }
 
+    case Chat.send_message(sender_id, recipient_id, attrs) do
+      {:ok, _view} ->
         {:reply, :ok, socket}
 
-      {:error, changeset} ->
+      {:error, %Ecto.Changeset{} = changeset} ->
         {:reply, {:error, %{errors: changeset_errors(changeset)}}, socket}
+
+      {:error, reason} ->
+        {:reply, {:error, %{reason: to_string(reason)}}, socket}
     end
   end
 
