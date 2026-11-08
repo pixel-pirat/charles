@@ -84,17 +84,16 @@ class _NavItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+      child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-        decoration: BoxDecoration(
-          color: isActive ? AppTheme.primary.withValues(alpha: 0.1) : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
-        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 24, color: isActive ? AppTheme.primary : AppTheme.iconInactive),
+            Icon(
+              isActive ? _filledVariant(icon) : icon,
+              size: 24,
+              color: isActive ? AppTheme.primary : AppTheme.iconInactive,
+            ),
             const SizedBox(height: 3),
             Text(
               label,
@@ -108,5 +107,15 @@ class _NavItem extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  IconData _filledVariant(IconData outlined) {
+    return switch (outlined) {
+      Icons.explore_outlined => Icons.explore_rounded,
+      Icons.people_outline_rounded => Icons.people_rounded,
+      Icons.chat_bubble_outline_rounded => Icons.chat_bubble_rounded,
+      Icons.person_outline_rounded => Icons.person_rounded,
+      _ => outlined,
+    };
   }
 }
